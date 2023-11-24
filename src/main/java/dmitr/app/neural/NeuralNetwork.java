@@ -16,11 +16,7 @@ public class NeuralNetwork {
         this.hasBias = hasBias;
 
         buildLayers(inputNeuronsCount, hiddenNeuronsCounts, outputNeuronsCount);
-        setupWeights();
-    }
-
-    private int getIntBias() {
-        return hasBias ? 1 : 0;
+        resetWeights();
     }
 
     private void buildLayers(int inputNeuronsCount, int[] hiddenNeuronsCounts, int outputNeuronsCount) {
@@ -44,7 +40,11 @@ public class NeuralNetwork {
                     .forEach(n -> layers[n][layers[n].length - 1].setNeuronType(NeuronType.BIAS));
     }
 
-    private void setupWeights() {
+    private int getIntBias() {
+        return hasBias ? 1 : 0;
+    }
+
+    public void resetWeights() {
         weights = new double[layers.length][][];
         deltaStorage = new double[layers.length][][];
 
@@ -82,21 +82,18 @@ public class NeuralNetwork {
         return Arrays.stream(layers[layers.length - 1]).mapToDouble(Neuron::getData).toArray();
     }
 
-    public void learn(double[] input, double[] expectedOutput, float learningRate, float moment) throws RuntimeException {
-        if (input.length != layers[0].length - getIntBias())
-            throw new RuntimeException("[NeuralNetwork Error] The number of input values does not match the number of input layer!");
-
-        if (expectedOutput.length != layers[layers.length - 1].length)
-            throw new RuntimeException("[NeuralNetwork Error] The number of expected output values does not match the number of output layer!");
-
+    private double[] train(double[] input, double[] expectedOutput, float learningRate, float moment) throws RuntimeException {
         double[] currentOutput = predict(input);
 
         double[][] delta = new double[layers.length][];
+        double[] error = new double[layers[layers.length - 1].length];
 
         delta[layers.length - 1] = new double[layers[layers.length - 1].length];
-        for (int i = 0; i < layers[layers.length - 1].length; i++)
+        for (int i = 0; i < layers[layers.length - 1].length; i++) {
             delta[layers.length - 1][i] = (expectedOutput[i] - currentOutput[i]) * layers[layers.length - 1][i]
                     .getNeuralActivation().activate(currentOutput[i], true);
+            error[i] = (Math.pow(expectedOutput[i] - currentOutput[i], 2));
+        }
 
         for (int i = layers.length - 2; i > 0; i--) {
             delta[i] = new double[layers[i].length];
@@ -117,6 +114,57 @@ public class NeuralNetwork {
                     weights[i - 1][k][j] += value;
                     deltaStorage[i - 1][k][j] = value;
                 }
+
+        return error;
+    }
+
+    private void learn(double[][] input, double[][] expectedOutput,
+                       float learningRate, float moment, int iterations, float error) throws RuntimeException {
+        if (input[0].length != layers[0].length - getIntBias())
+            throw new RuntimeException("[NeuralNetwork Error] The number of input values does not match the number of input layer!");
+
+        if (expectedOutput[0].length != layers[layers.length - 1].length)
+            throw new RuntimeException("[NeuralNetwork Error] The number of expected output values does not match the number of output layer!");
+
+        if (error == 0) {
+            for (int i = 0; i < iterations; i++)
+                for (int k = 0; k < input.length; k++)
+                    train(input[k], expectedOutput[k], learningRate, moment);
+            return;
+        }
+
+        loop:
+        while (true) {
+            for (int k = 0; k < input.length; k++)
+                if (Arrays.stream(train(input[k], expectedOutput[k], learningRate, moment))
+                        .filter(n -> n < error).count() != 0) {
+                    break loop;
+                }
+        }
+    }
+
+    public void learn(double[][] input, double[][] expectedOutput, float learningRate, float moment, int iterations) throws RuntimeException {
+        learn(input, expectedOutput, learningRate, moment, iterations, 0);
+    }
+
+    public void learn(double[][] input, double[][] expectedOutput, float learningRate, float moment, float error) throws RuntimeException {
+        learn(input, expectedOutput, learningRate, moment, 0, error);
+    }
+
+    public void learn(double[][] input, double[][] expectedOutput, float learningRate, float moment) throws RuntimeException {
+        learn(input, expectedOutput, learningRate, moment, 1);
+    }
+
+    public void learn(double[] input, double[] expectedOutput, float learningRate, float moment, int iterations) throws RuntimeException {
+        learn(new double[][]{input}, new double[][]{expectedOutput}, learningRate, moment, iterations, 0);
+    }
+
+    public void learn(double[] input, double[] expectedOutput, float learningRate, float moment, float error) throws RuntimeException {
+        learn(new double[][]{input}, new double[][]{expectedOutput}, learningRate, moment, 0, error);
+    }
+
+    public void learn(double[] input, double[] expectedOutput, float learningRate, float moment) throws RuntimeException {
+        learn(new double[][]{input}, new double[][]{expectedOutput}, learningRate, moment, 1);
     }
 
 }
