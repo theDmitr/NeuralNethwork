@@ -1,13 +1,11 @@
-package dmitr.app.neural;
+package dmitr.neural;
 
 public class Neuron {
 
-    private final INeuronActivation neuralActivation;
     private NeuronType neuronType;
     private double data;
 
-    public Neuron(INeuronActivation neuronActivation, NeuronType neuronType) {
-        this.neuralActivation = neuronActivation;
+    public Neuron(NeuronType neuronType) {
         this.neuronType = neuronType;
     }
 
@@ -27,10 +25,6 @@ public class Neuron {
 
     public void setNeuronType(NeuronType neuronType) {
         this.neuronType = neuronType;
-    }
-
-    public INeuronActivation getNeuralActivation() {
-        return neuralActivation;
     }
 
     @Override

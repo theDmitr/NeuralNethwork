@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-    mainClass = 'dmitr.app.Main'
+    mainClass = 'dmitr.neural.Main'
 }
 
 group = 'dmitr.app'

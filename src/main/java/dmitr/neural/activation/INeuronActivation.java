@@ -1,4 +1,4 @@
-package dmitr.app.neural;
+package dmitr.neural.activation;
 
 public interface INeuronActivation {
 

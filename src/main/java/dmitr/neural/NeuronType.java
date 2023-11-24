@@ -1,4 +1,4 @@
-package dmitr.app.neural;
+package dmitr.neural;
 
 public enum NeuronType {
 
