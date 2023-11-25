@@ -7,6 +7,7 @@ import dmitr.neural.activation.NeuronActivation;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 public class NeuralNetworkParser {
 
@@ -72,8 +73,9 @@ public class NeuralNetworkParser {
                 weights[i] = new double[layerCounts[i]][];
                 for (int j = 0; j < layerCounts[i]; j++) {
                     weights[i][j] = new double[layerCounts[i + 1]];
+                    int passed = IntStream.range(0, i).map(n -> layerCounts[n] * layerCounts[n + 1]).sum() + layerCounts[i + 1] * j;
                     for (int k = 0; k < weights[i][j].length; k++)
-                        weights[i][j][k] = weightsSolid[layerCounts.length * i + j + k];
+                        weights[i][j][k] = weightsSolid[passed + k];
                 }
             }
 

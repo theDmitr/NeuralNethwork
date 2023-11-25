@@ -144,8 +144,7 @@ public class NeuralNetwork {
         return error;
     }
 
-    private void learn(double[][] input, double[][] expectedOutput, float learningRate,
-                       float moment, int iterations, float error) throws RuntimeException {
+    private void warnLearnInconsistencies(double[][] input, double[][] expectedOutput, float moment) {
         if (moment < 0.0f || moment > 1.0f)
             throw new RuntimeException("[NeuralNetwork Error] The moment is not in the range [0;1]!");
 
@@ -154,57 +153,36 @@ public class NeuralNetwork {
 
         if (expectedOutput[0].length != layers[layers.length - 1].length)
             throw new RuntimeException("[NeuralNetwork Error] The number of expected output values does not match the number of output layer!");
+    }
 
-        if (error == 0) {
-            for (int i = 0; i < iterations; i++)
-                for (int k = 0; k < input.length; k++)
-                    train(input[k], expectedOutput[k], learningRate, moment);
-            return;
-        }
+    public void learn(double[][] input, double[][] expectedOutput, float learningRate,
+                       float moment, int iterations) throws RuntimeException {
+        warnLearnInconsistencies(input, expectedOutput, moment);
 
+        for (int i = 0; i < iterations; i++)
+            for (int k = 0; k < input.length; k++)
+                train(input[k], expectedOutput[k], learningRate, moment);
+    }
+
+    public void learn(double[][] input, double[][] expectedOutput, float learningRate,
+                       float moment, float error, int maxIterations) throws RuntimeException {
+        warnLearnInconsistencies(input, expectedOutput, moment);
+
+        int iter = 0;
         loop:
-        while (true) {
+        while (iter < maxIterations) {
             trainLoop:
             for (int i = 0; i < input.length; i++) {
-                double[] result = train(input[i], expectedOutput[i], learningRate, moment);
+                double[] errors = train(input[i], expectedOutput[i], learningRate, moment);
 
-                for (double currentError : result)
-                    if (currentError > error)
+                for (double e : errors)
+                    if (e > error)
                         continue trainLoop;
 
                 break loop;
             }
+            iter++;
         }
-    }
-
-    public void learn(double[][] input, double[][] expectedOutput, float learningRate,
-                      float moment, int iterations) throws RuntimeException {
-        learn(input, expectedOutput, learningRate, moment, iterations, 0);
-    }
-
-    public void learn(double[][] input, double[][] expectedOutput, float learningRate,
-                      float moment, float error) throws RuntimeException {
-        learn(input, expectedOutput, learningRate, moment, 0, error);
-    }
-
-    public void learn(double[][] input, double[][] expectedOutput, float learningRate,
-                      float moment) throws RuntimeException {
-        learn(input, expectedOutput, learningRate, moment, 1);
-    }
-
-    public void learn(double[] input, double[] expectedOutput, float learningRate,
-                      float moment, int iterations) throws RuntimeException {
-        learn(new double[][]{input}, new double[][]{expectedOutput}, learningRate, moment, iterations, 0);
-    }
-
-    public void learn(double[] input, double[] expectedOutput, float learningRate,
-                      float moment, float error) throws RuntimeException {
-        learn(new double[][]{input}, new double[][]{expectedOutput}, learningRate, moment, 0, error);
-    }
-
-    public void learn(double[] input, double[] expectedOutput, float learningRate,
-                      float moment) throws RuntimeException {
-        learn(new double[][]{input}, new double[][]{expectedOutput}, learningRate, moment, 1);
     }
 
     public int getIntBias() {

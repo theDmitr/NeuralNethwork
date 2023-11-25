@@ -8,14 +8,14 @@ import java.io.*;
 public class Main {
 
     public static void main(String[] args) {
-        NeuralNetwork neuralNetwork = new NeuralNetwork(new int[]{2, 1}, true, NeuronActivation.SIGMOID);
+        NeuralNetwork neuralNetwork = new NeuralNetwork(new int[]{2, 2, 2, 1}, true, NeuronActivation.SIGMOID);
 
         float learnRate = 1f;
         float moment = 0.93f;
 
         neuralNetwork.learn(
                 new double[][]{new double[]{0, 0}, new double[]{0, 1}, new double[]{1, 0}, new double[]{1, 1}},
-                new double[][]{new double[]{0}, new double[]{1}, new double[]{1}, new double[]{1}},
+                new double[][]{new double[]{1}, new double[]{0}, new double[]{0}, new double[]{1}},
                 learnRate, moment, 1000
         );
 
