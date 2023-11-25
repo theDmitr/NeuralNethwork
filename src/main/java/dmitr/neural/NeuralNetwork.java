@@ -32,6 +32,13 @@ public class NeuralNetwork {
     }
 
     private void buildLayers(int[] layersNeuronsCounts) {
+        if (layersNeuronsCounts.length < 2)
+            throw new RuntimeException("[NeuralNetwork Error] A neural network must have at least 1 input and 1 output neuron!");
+
+        for (int layersNeuronsCount : layersNeuronsCounts)
+            if (layersNeuronsCount < 1)
+                throw new RuntimeException("[NeuralNetwork Error] A layer must have at least 1 neuron!");
+
         layers = new Neuron[layersNeuronsCounts.length][];
 
         layers[0] = new Neuron[layersNeuronsCounts[0] + getIntBias()];
