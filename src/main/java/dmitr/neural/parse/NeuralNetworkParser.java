@@ -46,7 +46,7 @@ public class NeuralNetworkParser {
     }
 
     public static NeuralNetwork get(InputStream in) {
-        NeuralNetwork neuralNetwork = null;
+        NeuralNetwork neuralNetwork;
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
             String line = reader.readLine();
