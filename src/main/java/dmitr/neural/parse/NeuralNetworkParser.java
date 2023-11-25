@@ -36,8 +36,6 @@ public class NeuralNetworkParser {
                 layersOut.append(l).append(",");
             writer.write(layersOut.substring(0, layersOut.length() - 1) + "#");
 
-            writer.write(weights.length + "#");
-
             StringBuilder weightsOut = new StringBuilder();
             for (double w : weights)
                 weightsOut.append(w).append(",");
@@ -63,9 +61,8 @@ public class NeuralNetworkParser {
                 layerCounts[i] = Integer.parseInt(layerCountsInput[i]) + (bias ? 1 : 0);
             layerCounts[layerCounts.length - 1] -= (bias ? 1 : 0);
 
-            int weightsCount = Integer.parseInt(parts[3]);
-            String[] weightsInput = parts[4].split(",");
-            double[] weightsSolid = new double[weightsCount];
+            String[] weightsInput = parts[3].split(",");
+            double[] weightsSolid = new double[weightsInput.length];
             for (int i = 0; i < weightsSolid.length; i++)
                 weightsSolid[i] = Double.parseDouble(weightsInput[i]);
 
