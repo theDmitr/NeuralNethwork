@@ -172,18 +172,21 @@ public class NeuralNetwork {
     }
 
     public void learn(double[][] input, double[][] expectedOutput, float learningRate,
-                       float moment, float error, int maxIterations) throws RuntimeException {
+                       float moment, float error, int maxIterations, ErrorCalcType errorCalcType) throws RuntimeException {
         warnLearnInconsistencies(input, expectedOutput, moment);
 
         int iter = 0;
+        double[] errors = new double[layers[layers.length - 1].length];
         loop:
         while (iter < maxIterations) {
             trainLoop:
             for (int i = 0; i < input.length; i++) {
-                double[] errors = train(input[i], expectedOutput[i], learningRate, moment);
+                double[] iterationErrors = train(input[i], expectedOutput[i], learningRate, moment);
+
+                errorCalcType.insert(errors, iterationErrors);
 
                 for (double e : errors)
-                    if (e > error)
+                    if (errorCalcType.getGlobalError(e, iter + 1) > error)
                         continue trainLoop;
 
                 break loop;

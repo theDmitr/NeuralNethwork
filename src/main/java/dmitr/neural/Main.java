@@ -4,44 +4,27 @@ import dmitr.neural.activation.NeuronActivation;
 import dmitr.neural.parse.NeuralNetworkParser;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
-        NeuralNetwork neuralNetwork = new NeuralNetwork(new int[]{2, 2, 1}, true, NeuronActivation.SIGMOID);
+        NeuralNetwork neuralNetwork = new NeuralNetwork(new int[]{2, 1}, true, NeuronActivation.SIGMOID);
 
         float learnRate = 1f;
         float moment = 0.93f;
 
         neuralNetwork.learn(
                 new double[][]{new double[]{0, 0}, new double[]{0, 1}, new double[]{1, 0}, new double[]{1, 1}},
-                new double[][]{new double[]{1}, new double[]{0}, new double[]{0}, new double[]{1}},
-                learnRate, moment, 0.000001f, 10000
+                new double[][]{new double[]{0}, new double[]{0}, new double[]{0}, new double[]{1}},
+                learnRate, moment, 0.01f, 1000000000, ErrorCalcType.ROOT_MSE
         );
 
         System.out.println(neuralNetwork.predict(new double[]{0, 0})[0]);
         System.out.println(neuralNetwork.predict(new double[]{0, 1})[0]);
         System.out.println(neuralNetwork.predict(new double[]{1, 0})[0]);
         System.out.println(neuralNetwork.predict(new double[]{1, 1})[0]);
-
-        File out = new File("test");
-        OutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(out);
-        } catch (IOException  ignored) {}
-
-        NeuralNetworkParser.write(neuralNetwork, outputStream);
-
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(out);
-        } catch (IOException ignored) {}
-        NeuralNetwork nn = NeuralNetworkParser.get(inputStream);
-
-        System.out.println(nn.predict(new double[]{0, 0})[0]);
-        System.out.println(nn.predict(new double[]{0, 1})[0]);
-        System.out.println(nn.predict(new double[]{1, 0})[0]);
-        System.out.println(nn.predict(new double[]{1, 1})[0]);
     }
 
 }
