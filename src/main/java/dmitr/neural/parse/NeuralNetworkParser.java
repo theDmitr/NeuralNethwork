@@ -6,41 +6,24 @@ import dmitr.neural.activation.NeuronActivation;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.stream.IntStream;
 
 public class NeuralNetworkParser {
 
     public static void write(NeuralNetwork network, OutputStream out) {
         Neuron[][] networkLayers = network.getLayers();
-        double[][][] networkWeights = network.getWeights();
-
-        int bias = network.getIntBias();
-        int activation = network.getNeuronActivation().id;
-
-        int[] layers = Arrays.stream(networkLayers)
-                .mapToInt(networkLayer -> networkLayer.length - network.getIntBias())
-                .toArray();
-        layers[layers.length - 1] += network.getIntBias();
-
-        double[] weights = Arrays.stream(networkWeights)
-                .flatMap(Arrays::stream)
-                .flatMapToDouble(Arrays::stream)
-                .toArray();
 
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8))) {
-            writer.write(bias + "#");
-            writer.write(activation + "#");
+            writer.write(network.getIntBias() + "\n");
+            writer.write(network.getNeuronActivation().id + "\n");
+            writer.write(networkLayers.length + "\n");
 
-            StringBuilder layersOut = new StringBuilder();
-            for (int l : layers)
-                layersOut.append(l).append(",");
-            writer.write(layersOut.substring(0, layersOut.length() - 1) + "#");
+            for (int i = 0; i < networkLayers.length; i++)
+                writer.write(networkLayers[i].length - ((i != networkLayers.length - 1) ? network.getIntBias() : 0) + "\n");
 
-            StringBuilder weightsOut = new StringBuilder();
-            for (double w : weights)
-                weightsOut.append(w).append(",");
-            writer.write(weightsOut.substring(0, weightsOut.length() - 1));
+            for (double[][] i : network.getWeights())
+                for (double[] j : i)
+                    for (double k : j)
+                        writer.write(k + "\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -50,38 +33,23 @@ public class NeuralNetworkParser {
         NeuralNetwork neuralNetwork;
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
-            String line = reader.readLine();
-            String[] parts = line.split("#");
+            boolean bias = reader.readLine().equals("1");
+            NeuronActivation activation = NeuronActivation.get(Integer.parseInt(reader.readLine()));
 
-            boolean bias = parts[0].equals("1");
-            NeuronActivation activation = NeuronActivation.get(Integer.parseInt(parts[1]));
-
-            String[] layerCountsInput = parts[2].split(",");
-            int[] layerCounts = new int[layerCountsInput.length];
+            int[] layerCounts = new int[Integer.parseInt(reader.readLine())];
             for (int i = 0; i < layerCounts.length; i++)
-                layerCounts[i] = Integer.parseInt(layerCountsInput[i]) + (bias ? 1 : 0);
-            layerCounts[layerCounts.length - 1] -= (bias ? 1 : 0);
-
-            String[] weightsInput = parts[3].split(",");
-            double[] weightsSolid = new double[weightsInput.length];
-            for (int i = 0; i < weightsSolid.length; i++)
-                weightsSolid[i] = Double.parseDouble(weightsInput[i]);
+                layerCounts[i] = Integer.parseInt(reader.readLine());
 
             double[][][] weights = new double[layerCounts.length - 1][][];
 
             for (int i = 0; i < layerCounts.length - 1; i++) {
-                weights[i] = new double[layerCounts[i]][];
-                for (int j = 0; j < layerCounts[i]; j++) {
-                    weights[i][j] = new double[layerCounts[i + 1]];
-                    int passed = IntStream.range(0, i).map(n -> layerCounts[n] * layerCounts[n + 1]).sum() + layerCounts[i + 1] * j;
+                weights[i] = new double[layerCounts[i] + (bias ? 1 : 0)][];
+                for (int j = 0; j < weights[i].length; j++) {
+                    weights[i][j] = new double[layerCounts[i + 1] + ((i != layerCounts.length - 2) ? (bias ? 1 : 0) : 0)];
                     for (int k = 0; k < weights[i][j].length; k++)
-                        weights[i][j][k] = weightsSolid[passed + k];
+                        weights[i][j][k] = Double.parseDouble(reader.readLine());
                 }
             }
-
-            for (int i = 0; i < layerCounts.length; i++)
-                layerCounts[i] -= (bias ? 1 : 0);
-            layerCounts[layerCounts.length - 1] += (bias ? 1 : 0);
 
             neuralNetwork = new NeuralNetwork(layerCounts, bias, activation, weights);
         } catch (IOException e) {

@@ -16,7 +16,7 @@ public class Main {
         neuralNetwork.learn(
                 new double[][]{new double[]{0, 0}, new double[]{0, 1}, new double[]{1, 0}, new double[]{1, 1}},
                 new double[][]{new double[]{1}, new double[]{0}, new double[]{0}, new double[]{1}},
-                learnRate, moment, 0.000001f, 1000000000
+                learnRate, moment, 0.000001f, 10000
         );
 
         System.out.println(neuralNetwork.predict(new double[]{0, 0})[0]);
