@@ -1,11 +1,6 @@
 package dmitr.neural;
 
 import dmitr.neural.activation.NeuronActivation;
-import dmitr.neural.parse.NeuralNetworkParser;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
 

@@ -1,6 +1,7 @@
 package dmitr.neural;
 
 import dmitr.neural.activation.NeuronActivation;
+import dmitr.neural.exception.RuntimeExceptions;
 
 import java.util.Random;
 
@@ -33,11 +34,11 @@ public class NeuralNetwork {
 
     private void buildLayers(int[] layersNeuronsCounts) {
         if (layersNeuronsCounts.length < 2)
-            throw new RuntimeException("[NeuralNetwork Error] A neural network must have at least 1 input and 1 output neuron!");
+            throw RuntimeExceptions.layersCount;
 
         for (int layersNeuronsCount : layersNeuronsCounts)
             if (layersNeuronsCount < 1)
-                throw new RuntimeException("[NeuralNetwork Error] A layer must have at least 1 neuron!");
+                throw RuntimeExceptions.neuronsCount;
 
         layers = new Neuron[layersNeuronsCounts.length][];
 
@@ -91,7 +92,7 @@ public class NeuralNetwork {
 
     public double[] predict(double[] input) throws RuntimeException {
         if (input.length != layers[0].length - getIntBias())
-            throw new RuntimeException("[NeuralNetwork Error] The number of input values does not match the number of input neurons!");
+            throw RuntimeExceptions.input;
 
         for (int i = 0; i < input.length; i++)
             layers[0][i].setData(input[i]);
@@ -153,13 +154,13 @@ public class NeuralNetwork {
 
     private void warnLearnInconsistencies(double[][] input, double[][] expectedOutput, float moment) {
         if (moment < 0.0f || moment > 1.0f)
-            throw new RuntimeException("[NeuralNetwork Error] The moment is not in the range [0;1]!");
+            throw RuntimeExceptions.moment;
 
         if (input[0].length != layers[0].length - getIntBias())
-            throw new RuntimeException("[NeuralNetwork Error] The number of input values does not match the number of input layer!");
+            throw RuntimeExceptions.input;
 
         if (expectedOutput[0].length != layers[layers.length - 1].length)
-            throw new RuntimeException("[NeuralNetwork Error] The number of expected output values does not match the number of output layer!");
+            throw RuntimeExceptions.output;
     }
 
     public void learn(double[][] input, double[][] expectedOutput, float learningRate,
