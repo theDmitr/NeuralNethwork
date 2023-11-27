@@ -152,38 +152,36 @@ public class NeuralNetwork {
         return error;
     }
 
-    private void warnLearnInconsistencies(double[][] input, double[][] expectedOutput, float moment) {
+    private void warnLearnInconsistencies(LearnDataset dataset, float moment) {
         if (moment < 0.0f || moment > 1.0f)
             throw RuntimeExceptions.moment;
 
-        if (input[0].length != layers[0].length - getIntBias())
+        if (dataset.getInputNeurons() != layers[0].length - getIntBias())
             throw RuntimeExceptions.input;
 
-        if (expectedOutput[0].length != layers[layers.length - 1].length)
+        if (dataset.getOutputNeurons() != layers[layers.length - 1].length)
             throw RuntimeExceptions.output;
     }
 
-    public void learn(double[][] input, double[][] expectedOutput, float learningRate,
-                       float moment, int iterations) throws RuntimeException {
-        warnLearnInconsistencies(input, expectedOutput, moment);
+    public void learn(LearnDataset dataset, float learningRate, float moment, int iterations) throws RuntimeException {
+        warnLearnInconsistencies(dataset, moment);
 
         for (int i = 0; i < iterations; i++)
-            for (int k = 0; k < input.length; k++)
-                train(input[k], expectedOutput[k], learningRate, moment);
+            for (int k = 0; k < dataset.getSize(); k++)
+                train(dataset.getInputPart(k), dataset.getOutputPart(k), learningRate, moment);
     }
 
-    public void learn(double[][] input, double[][] expectedOutput, float learningRate,
-                       float moment, float error, int maxIterations, ErrorCalcType errorCalcType) throws RuntimeException {
-        warnLearnInconsistencies(input, expectedOutput, moment);
+    public void learn(LearnDataset dataset, float learningRate, float moment, float error, 
+                      int maxIterations, ErrorCalcType errorCalcType) throws RuntimeException {
+        warnLearnInconsistencies(dataset, moment);
 
         int iter = 0;
         double[] errors = new double[layers[layers.length - 1].length];
         loop:
         while (iter < maxIterations) {
             trainLoop:
-            for (int i = 0; i < input.length; i++) {
-                double[] iterationErrors = train(input[i], expectedOutput[i], learningRate, moment);
-
+            for (int i = 0; i < dataset.getSize(); i++) {
+                double[] iterationErrors = train(dataset.getInputPart(i), dataset.getOutputPart(i), learningRate, moment);
                 errorCalcType.insert(errors, iterationErrors);
 
                 for (double e : errors)

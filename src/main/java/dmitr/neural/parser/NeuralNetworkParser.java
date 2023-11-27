@@ -1,4 +1,4 @@
-package dmitr.neural.parse;
+package dmitr.neural.parser;
 
 import dmitr.neural.NeuralNetwork;
 import dmitr.neural.Neuron;
@@ -7,9 +7,10 @@ import dmitr.neural.activation.NeuronActivation;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-public class NeuralNetworkParser {
+public class NeuralNetworkParser implements IParser<NeuralNetwork> {
 
-    public static void write(NeuralNetwork network, OutputStream out) {
+    @Override
+    public void parseOut(NeuralNetwork network, OutputStream out) {
         Neuron[][] networkLayers = network.getLayers();
 
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8))) {
@@ -29,7 +30,8 @@ public class NeuralNetworkParser {
         }
     }
 
-    public static NeuralNetwork get(InputStream in) {
+    @Override
+    public NeuralNetwork parseIn(InputStream in) {
         NeuralNetwork neuralNetwork;
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
