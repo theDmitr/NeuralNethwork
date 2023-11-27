@@ -36,7 +36,6 @@ public class LearnDatasetParser implements IParser<LearnDataset> {
 
             for (String line = reader.readLine(); line != null; line = reader.readLine()) {
                 set[factor] = Double.parseDouble(line);
-                System.out.println(line);
                 factor++;
                 if (factor == set.length) {
                     factor = 0;
