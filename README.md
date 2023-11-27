@@ -82,11 +82,11 @@ Saving:
 ```java
 File file = new File("LearnDataset");  
 FileOutputStream outputStream = new FileOutputStream(file);  
-LearnDatasetParser learnDatasetParser = new LearnDatasetParser();  
-learnDatasetParser.parseOut(dataset, outputStream);
+LearnDatasetParser parser = new LearnDatasetParser();  
+parser.parseOut(dataset, outputStream);
 ```
 Load:
 ```java
 FileInputStream inputStream = new FileInputStream(file);  
-LearnDataset parsed = learnDatasetParser.parseIn(inputStream);
+LearnDataset parsed = parser.parseIn(inputStream);
 ```
