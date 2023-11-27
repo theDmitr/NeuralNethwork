@@ -87,7 +87,6 @@ learnDatasetParser.parseOut(dataset, outputStream);
 ```
 Load:
 ```java
-File file = new File("LearnDataset");  
 FileInputStream inputStream = new FileInputStream(file);  
 LearnDataset parsed = learnDatasetParser.parseIn(inputStream);
 ```
