@@ -27,6 +27,14 @@ In order to create a dataset for training a neural network, you simply need to c
 ```java
 LearnDataset dataset = new LearnDataset(2, 1);
 ```
+The `insert` method is used for filling; accepts a `double[]` array with a length equal to the sum of the number of input and output neurons.
+Here, for example, is setting up a `dataset` for teaching logical OR:
+```java
+dataset.insert(new double[]{ 0, 0, 0 });
+dataset.insert(new double[]{ 0, 1, 1 });
+dataset.insert(new double[]{ 1, 0, 1 });
+dataset.insert(new double[]{ 1, 1, 1 });
+```
 ### Learning tools
 Training can be carried out through a certain number of iterations or until the neural network error exceeds the transmitted value.
 #### Iteration method
@@ -63,20 +71,20 @@ T parseIn(InputStream stream);
 ```
 There are two parsers: `NeuralNetworkParser` and `LearnDatasetParser`, both of them implement this interface.
 ### NeuralNetwork
-To write a neural network somewhere (for example, to a file), the `parseOut` method is used, which accepts the neural network itself and the output stream.
+To write a `NeuralNetwork` somewhere (for example, to a file), the `parseOut` method is used, which accepts the `NeuralNetwork` itself and the output stream.
 ```java
 File file = new File("NeuralNetwork");  
 FileOutputStream outputStream = new FileOutputStream(file);  
 NeuralNetworkParser parser = new NeuralNetworkParser();  
 parser.parseOut(neuralNetwork, outputStream);
 ```
-On the contrary, to load the neural network we will use the `parseIn` method, passing the input stream into it. This method will return the resulting neural network.
+On the contrary, to load the `NeuralNetwork` we will use the `parseIn` method, passing the input stream into it. This method will return the resulting `NeuralNetwork`.
 ```java
 FileInputStream inputStream = new FileInputStream(file);  
 NeuralNetwork parsed = parser.parseIn(inputStream);
 ```
 ### LearnDataset
-In principle, saving/loading a data set is identical.
+In principle, saving/loading a `LearnDataset` is identical.
 
 Saving:
 ```java
