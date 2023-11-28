@@ -106,7 +106,7 @@ public class NeuralNetwork {
                 for (int k = 0; k < layers[i - 1].length; k++)
                     value += layers[i - 1][k].getData() * weights[i - 1][k][j];
 
-                layers[i][j].setData(neuronActivation.activation.activate(value, false));
+                layers[i][j].setData(neuronActivation.getDefault(value));
             }
 
         double[] result = new double[layers[layers.length - 1].length];
@@ -125,7 +125,7 @@ public class NeuralNetwork {
 
         delta[layers.length - 1] = new double[layers[layers.length - 1].length];
         for (int i = 0; i < layers[layers.length - 1].length; i++) {
-            delta[layers.length - 1][i] = (expectedOutput[i] - currentOutput[i]) * neuronActivation.activation.activate(currentOutput[i], true);
+            delta[layers.length - 1][i] = (expectedOutput[i] - currentOutput[i]) * neuronActivation.getDerivative(currentOutput[i]);
             error[i] = (Math.pow(expectedOutput[i] - currentOutput[i], 2));
         }
 
@@ -137,7 +137,7 @@ public class NeuralNetwork {
                 for (int k = 0; k < layers[i + 1].length; k++)
                     weightsDeltaSum += weights[i][j][k] * delta[i + 1][k];
 
-                delta[i][j] = neuronActivation.activation.activate(layers[i][j].getData(), true) * weightsDeltaSum;
+                delta[i][j] = neuronActivation.getDerivative(layers[i][j].getData()) * weightsDeltaSum;
             }
         }
 
