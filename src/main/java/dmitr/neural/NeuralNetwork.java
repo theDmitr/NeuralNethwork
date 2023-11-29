@@ -65,8 +65,6 @@ public class NeuralNetwork {
         weights = new double[layers.length - 1][][];
         deltaStorage = new double[layers.length][][];
 
-        Random random = new Random();
-
         for (int i = 0; i < layers.length - 1; i++) {
             weights[i] = new double[layers[i].length][];
             deltaStorage[i] = new double[layers[i].length][];
@@ -74,7 +72,7 @@ public class NeuralNetwork {
                 weights[i][j] = new double[layers[i + 1].length];
 
                 for (int k = 0; k < weights[i][j].length; k++)
-                    weights[i][j][k] = random.nextDouble();
+                    weights[i][j][k] = Math.random() * (1.0 - (-1.0)) + (-1.0);
 
                 deltaStorage[i][j] = new double[layers[i + 1].length];
             }
